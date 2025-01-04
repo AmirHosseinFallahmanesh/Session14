@@ -46,11 +46,11 @@ namespace Demo1.Controllers
 
         public async Task<IActionResult> SD(string name)
         {
-            if (name.Contains(".."))
+            if (name.Contains("../"))
             {
                 return BadRequest();
             }
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files", name);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files","uploads", name);
             if (!System.IO.File.Exists(filePath))
             {
                 return NotFound();
@@ -81,5 +81,46 @@ namespace Demo1.Controllers
             return File(fileBytes, contentType, name);
         }
 
+
+        public IActionResult U()
+        {
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task< IActionResult> U(IFormFile file)
+        {
+            if (file==null||file.Length==0)
+            {
+                ViewBag.message = "please select file";
+                return View();
+            }
+            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files", "uploads");
+            if (!System.IO.File.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            string[] allowdExtenstions = new string[] { ".jpg", ".jpeg", ".png", ".pdf" };
+            string ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            if (!allowdExtenstions.Contains(ext))
+            {
+                ViewBag.message = "invalid file";
+                return View();
+            }
+
+
+            var name = Guid.NewGuid().ToString()+ext;
+           
+
+            var filePath = Path.Combine(folderPath, name);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            ViewBag.message = "done";
+            return View();
+        }
     }
 }

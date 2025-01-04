@@ -42,7 +42,7 @@ namespace Demo1
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseMiddleware<AntiXssMiddleware>();
+          //  app.UseMiddleware<AntiXssMiddleware>();
             app.UseRouting();
 
             app.UseAuthorization();
