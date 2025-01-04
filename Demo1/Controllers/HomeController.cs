@@ -27,6 +27,14 @@ namespace Demo1.Controllers
         {
             ViewBag.url = url;
             ViewBag.src = src;
+            return View();                                    
+        }
+
+
+
+        public IActionResult CE(string name)
+        {
+            //Process.Start("md "+name);
             return View();
         }
 

@@ -89,12 +89,19 @@ namespace Demo1.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task< IActionResult> U(IFormFile file)
         {
+            int maxFileSize = 2 * 1024 * 1024;
             if (file==null||file.Length==0)
             {
                 ViewBag.message = "please select file";
                 return View();
+            }
+            if (file.Length > maxFileSize)
+            {
+                ViewBag.Message = "File size must not exceed 2 MB.";
+                return View("Index");
             }
             var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files", "uploads");
             if (!System.IO.File.Exists(folderPath))
@@ -110,6 +117,19 @@ namespace Demo1.Controllers
                 return View();
             }
 
+            var allowedContentTypes = new[]
+         {
+                "image/jpeg",
+                "image/png",
+                "image/gif",
+                "application/pdf"
+            };
+
+            if (!allowedContentTypes.Contains(file.ContentType))
+            {
+                ViewBag.Message = "Invalid content type. Only image files (jpg, jpeg, png, gif) and PDF files are allowed.";
+                return View("Index");
+            }
 
             var name = Guid.NewGuid().ToString()+ext;
            
